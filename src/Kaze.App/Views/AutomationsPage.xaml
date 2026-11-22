@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Kaze.App.Views.AutomationsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:h="using:Kaze.App.Helpers"
+    xmlns:local="using:Kaze.App.Views"
+    xmlns:tk="using:CommunityToolkit.WinUI.Controls">
+    <ScrollViewer>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="Narrow">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="PageRoot.Padding" Value="16,16,16,24" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Wide">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="641" /></VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <StackPanel x:Name="PageRoot" MaxWidth="{StaticResource PageMaxWidth}" Padding="{StaticResource PagePadding}" Spacing="{StaticResource CardSpacing}">
+            <TextBlock Style="{StaticResource PageTitleStyle}" Text="{h:T Key=Automations_AutomationsAndPresets}" />
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Margin="1,0,0,8" Text="{h:T Key=Automations_WhenThePCLocksOr}" />
+            <tk:SettingsExpander Description="{h:T Key=Automations_WaitsForTheDelaySo}" Header="{h:T Key=Automations_TurnAirConditionersOffWhen}" IsExpanded="True">
+                <tk:SettingsExpander.HeaderIcon><FontIcon Glyph="&#xE72E;" /></tk:SettingsExpander.HeaderIcon>
+                <ToggleSwitch x:Name="OffOnLock" Toggled="Setting_Changed" />
+                <tk:SettingsExpander.Items>
+                    <tk:SettingsCard Header="{h:T Key=Automations_DelayInMinutes}">
+                        <NumberBox x:Name="LockDelay" MinWidth="120" Maximum="240" Minimum="0" SpinButtonPlacementMode="Compact" ValueChanged="Setting_Changed" />
+                    </tk:SettingsCard>
+                </tk:SettingsExpander.Items>
+            </tk:SettingsExpander>
+            <tk:SettingsCard Header="{h:T Key=Automations_TurnAirConditionersOffWhen2}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE708;" /></tk:SettingsCard.HeaderIcon>
+                <ToggleSwitch x:Name="OffOnSleep" Toggled="Setting_Changed" />
+            </tk:SettingsCard>
+            <tk:SettingsCard Description="{h:T Key=Automations_OnlyUnitsKazeSwitchedOff}" Header="{h:T Key=Automations_TurnThemBackOnWhen}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE777;" /></tk:SettingsCard.HeaderIcon>
+                <ToggleSwitch x:Name="RestoreOnUnlock" Toggled="Setting_Changed" />
+            </tk:SettingsCard>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{h:T Key=Automations_SleepCurve}" />
+            <tk:SettingsExpander Description="{h:T Key=Automations_StartItFromTheControl}" Header="{h:T Key=Automations_RelaxTheTemperatureOvernight}" IsExpanded="True">
+                <tk:SettingsExpander.HeaderIcon><FontIcon Glyph="&#xE708;" /></tk:SettingsExpander.HeaderIcon>
+                <tk:SettingsExpander.Items>
+                    <tk:SettingsCard Header="{h:T Key=Automations_Step1}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <NumberBox x:Name="Step1Minutes" MinWidth="110" Header="{h:T Key=Automations_AfterMin}" Maximum="720" Minimum="0" SmallChange="15" SpinButtonPlacementMode="Compact" ValueChanged="Sleep_Changed" />
+                            <NumberBox x:Name="Step1Delta" MinWidth="110" Header="{h:T Key=Automations_Change}" Maximum="4" Minimum="0" SmallChange="0.5" SpinButtonPlacementMode="Compact" ValueChanged="Sleep_Changed" />
+                        </StackPanel>
+                    </tk:SettingsCard>
+                    <tk:SettingsCard Header="{h:T Key=Automations_Step2}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <NumberBox x:Name="Step2Minutes" MinWidth="110" Header="{h:T Key=Automations_AfterMin}" Maximum="720" Minimum="0" SmallChange="15" SpinButtonPlacementMode="Compact" ValueChanged="Sleep_Changed" />
+                            <NumberBox x:Name="Step2Delta" MinWidth="110" Header="{h:T Key=Automations_Change}" Maximum="4" Minimum="0" SmallChange="0.5" SpinButtonPlacementMode="Compact" ValueChanged="Sleep_Changed" />
+                        </StackPanel>
+                    </tk:SettingsCard>
+                    <tk:SettingsCard Description="{h:T Key=Automations_0TurnsAStepOff}" Header="{h:T Key=Automations_Step3}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <NumberBox x:Name="Step3Minutes" MinWidth="110" Header="{h:T Key=Automations_AfterMin}" Maximum="720" Minimum="0" SmallChange="15" SpinButtonPlacementMode="Compact" ValueChanged="Sleep_Changed" />
+                            <NumberBox x:Name="Step3Delta" MinWidth="110" Header="{h:T Key=Automations_Change}" Maximum="4" Minimum="0" SmallChange="0.5" SpinButtonPlacementMode="Compact" ValueChanged="Sleep_Changed" />
+                        </StackPanel>
+                    </tk:SettingsCard>
+                    <tk:SettingsCard Header="{h:T Key=Automations_FanSpeedWhileSleeping}">
+                        <ComboBox x:Name="SleepFan" MinWidth="160" SelectionChanged="Sleep_Changed" />
+                    </tk:SettingsCard>
+                    <tk:SettingsCard Description="{h:T Key=Automations_0KeepsItRunning}" Header="{h:T Key=Automations_TurnOffAfterHours}">
+                        <NumberBox x:Name="SleepOffHours" MinWidth="120" Maximum="24" Minimum="0" SmallChange="0.5" SpinButtonPlacementMode="Compact" ValueChanged="Sleep_Changed" />
+                    </tk:SettingsCard>
+                </tk:SettingsExpander.Items>
+            </tk:SettingsExpander>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{h:T Key=Automations_Weather}" />
+            <tk:SettingsExpander x:Name="WeatherExpander" Description="{h:T Key=Automations_UsedForTheOutdoorTemperature}" Header="{h:T Key=Automations_Location}" IsExpanded="True">
+                <tk:SettingsExpander.HeaderIcon><FontIcon Glyph="&#xE753;" /></tk:SettingsExpander.HeaderIcon>
+                <Button x:Name="ClearLocation" Click="ClearLocation_Click" Content="{h:T Key=Automations_Remove}" />
+                <tk:SettingsExpander.Items>
+                    <tk:SettingsCard ContentAlignment="Left">
+                        <AutoSuggestBox
+                            x:Name="LocationSearch"
+                            MinWidth="280"
+                            PlaceholderText="{h:T Key=Automations_SearchForYourCity}"
+                            QueryIcon="Find"
+                            QuerySubmitted="LocationSearch_QuerySubmitted"
+                            SuggestionChosen="LocationSearch_SuggestionChosen"
+                            TextChanged="LocationSearch_TextChanged" />
+                    </tk:SettingsCard>
+                </tk:SettingsExpander.Items>
+            </tk:SettingsExpander>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{h:T Key=Automations_Reminders}" />
+            <tk:SettingsCard Description="{h:T Key=Automations_ANotificationWithAStart}" Header="{h:T Key=Automations_FrostWashReminder}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE9F5;" /></tk:SettingsCard.HeaderIcon>
+                <ComboBox x:Name="FrostInterval" MinWidth="160" SelectionChanged="Setting_Changed" />
+            </tk:SettingsCard>
+            <tk:SettingsCard Description="{h:T Key=Automations_NeedsEnergyTrackingOnIn}" Header="{h:T Key=Automations_MonthlyEnergyBudgetKWh}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE945;" /></tk:SettingsCard.HeaderIcon>
+                <NumberBox x:Name="EnergyBudget" MinWidth="120" Maximum="10000" Minimum="0" SmallChange="10" SpinButtonPlacementMode="Compact" ValueChanged="Setting_Changed" />
+            </tk:SettingsCard>
+            <tk:SettingsCard Description="{h:T Key=Automations_WithButtonsToSnoozeIt}" Header="{h:T Key=Automations_Warn5MinutesBeforeAn}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE916;" /></tk:SettingsCard.HeaderIcon>
+                <ToggleSwitch x:Name="TimerHeadsUp" Toggled="Setting_Changed" />
+            </tk:SettingsCard>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{h:T Key=Automations_Notifications}" />
+            <tk:SettingsCard Header="{h:T Key=Automations_AUnitIsChangedFrom}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE8EA;" /></tk:SettingsCard.HeaderIcon>
+                <ToggleSwitch x:Name="NotifyExternal" Toggled="Setting_Changed" />
+            </tk:SettingsCard>
+            <tk:SettingsCard Header="{h:T Key=Automations_AUnitGoesOfflineOr}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE701;" /></tk:SettingsCard.HeaderIcon>
+                <ToggleSwitch x:Name="NotifyOffline" Toggled="Setting_Changed" />
+            </tk:SettingsCard>
+            <tk:SettingsCard Header="{h:T Key=Automations_AScheduleOrTimerRuns}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE787;" /></tk:SettingsCard.HeaderIcon>
+                <ToggleSwitch x:Name="NotifySchedule" Toggled="Setting_Changed" />
+            </tk:SettingsCard>
+
+            <Grid Margin="0,24,0,8">
+                <StackPanel VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{h:T Key=Automations_Presets}" />
+                    <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="{h:T Key=Automations_ShownInTheTrayMenu}" />
+                </StackPanel>
+                <Button HorizontalAlignment="Right" VerticalAlignment="Center" Click="AddPreset_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon FontSize="16" Glyph="&#xE710;" />
+                        <TextBlock Text="{h:T Key=Automations_AddPreset}" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+            <ItemsControl x:Name="PresetsList">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="{StaticResource CardSpacing}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="local:PresetRow">
+                        <tk:SettingsCard Description="{x:Bind Detail}" Header="{x:Bind Name}">
+                            <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE734;" /></tk:SettingsCard.HeaderIcon>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <Button AutomationProperties.Name="{h:T Key=Automations_Edit}" Click="EditPreset_Click" Style="{StaticResource SubtleButtonStyle}" Tag="{x:Bind Id}" ToolTipService.ToolTip="{h:T Key=Automations_Edit}">
+                                    <FontIcon FontSize="16" Glyph="&#xE70F;" />
+                                </Button>
+                                <Button AutomationProperties.Name="{h:T Key=Automations_Delete}" Click="DeletePreset_Click" Style="{StaticResource SubtleButtonStyle}" Tag="{x:Bind Id}" ToolTipService.ToolTip="{h:T Key=Automations_Delete}">
+                                    <FontIcon FontSize="16" Glyph="&#xE74D;" />
+                                </Button>
+                            </StackPanel>
+                        </tk:SettingsCard>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

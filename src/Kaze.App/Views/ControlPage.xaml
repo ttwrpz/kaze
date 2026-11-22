@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Kaze.App.Views.ControlPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:h="using:Kaze.App.Helpers"
+    xmlns:c="using:Kaze.App.Controls"
+    xmlns:controls="using:Kaze.App.Controls"
+    xmlns:local="using:Kaze.App.Views">
+    <ScrollViewer>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="Narrow">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="PageRoot.Padding" Value="16,16,16,24" />
+                        <Setter Target="MainColumn.MaxWidth" Value="560" />
+                        <Setter Target="SideColumn.Width" Value="0" />
+                        <Setter Target="PageRoot.ColumnSpacing" Value="0" />
+                        <Setter Target="SidePanel.(Grid.Row)" Value="2" />
+                        <Setter Target="SidePanel.(Grid.Column)" Value="0" />
+                        <Setter Target="SidePanel.MaxWidth" Value="560" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Wide">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="900" /></VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <!-- Stretch to the window: the columns' MaxWidth keeps them left aligned. Sizing the grid from its
+             content made the whole page shift whenever card text changed (chart message, weather, status). -->
+        <Grid x:Name="PageRoot" Padding="{StaticResource PagePadding}" ColumnSpacing="16" RowSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="MainColumn" Width="3*" MaxWidth="480" />
+                <ColumnDefinition x:Name="SideColumn" Width="2*" MaxWidth="380" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.ColumnSpan="2" Margin="0,0,0,4" Style="{StaticResource TitleTextBlockStyle}" Text="{h:T Key=Control_Control}" />
+
+            <Border Grid.Row="1" VerticalAlignment="Top" Padding="20" Style="{StaticResource CardStyle}">
+                <controls:ControlPanel ShowTrend="False" />
+            </Border>
+
+            <StackPanel x:Name="SidePanel" Grid.Row="1" Grid.Column="1" Spacing="12">
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel Spacing="8">
+                        <Grid>
+                            <TextBlock VerticalAlignment="Center" Style="{StaticResource BodyStrongTextBlockStyle}" Text="{h:T Key=Control_RoomTemperature}" />
+                            <SelectorBar x:Name="HistoryRange" HorizontalAlignment="Right" SelectionChanged="HistoryRange_SelectionChanged">
+                                <SelectorBarItem x:Name="Range24h" IsSelected="True" Tag="24" Text="{h:T Key=Control_24H}" />
+                                <SelectorBarItem Tag="168" Text="{h:T Key=Control_7Days}" />
+                            </SelectorBar>
+                        </Grid>
+                        <c:TemperatureChart x:Name="HistoryChart" Height="170" AutomationProperties.Name="{h:T Key=Control_RoomTemperatureAndSetPoint}" />
+                        <StackPanel Orientation="Horizontal" Spacing="16">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Rectangle Width="16" Height="2" VerticalAlignment="Center" Fill="{ThemeResource AccentFillColorDefaultBrush}" />
+                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{h:T Key=Control_Room}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Line VerticalAlignment="Center" Stroke="{ThemeResource TextFillColorSecondaryBrush}" StrokeDashArray="3,2" StrokeThickness="2" X1="0" X2="16" Y1="1" Y2="1" />
+                                <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{h:T Key=Control_SetPoint}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel Spacing="4">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{h:T Key=Control_Outdoor}" />
+                        <TextBlock x:Name="WeatherText" Style="{StaticResource SubtitleTextBlockStyle}" />
+                        <TextBlock x:Name="WeatherDetail" Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" />
+                        <HyperlinkButton x:Name="WeatherSetup" Margin="-12,0,0,0" Click="WeatherSetup_Click" Content="{h:T Key=Control_SetYourLocation}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel Spacing="8">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{h:T Key=Control_AllUnits}" />
+                        <ItemsControl x:Name="UnitsList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="local:UnitRow">
+                                    <Grid Padding="0,6" ColumnSpacing="12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="{x:Bind Name}" />
+                                            <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="{x:Bind Detail}" />
+                                        </StackPanel>
+                                        <ToggleSwitch
+                                            Grid.Column="1"
+                                            MinWidth="0"
+                                            AutomationProperties.Name="{x:Bind Name}"
+                                            IsEnabled="{x:Bind Online}"
+                                            IsOn="{x:Bind IsOn}"
+                                            OffContent=""
+                                            OnContent=""
+                                            Tag="{x:Bind Key}"
+                                            Toggled="UnitPower_Toggled" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel Spacing="8">
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{h:T Key=Control_Connection}" />
+                        <TextBlock x:Name="ConnectionText" TextWrapping="Wrap" />
+                        <TextBlock x:Name="UpdatedText" Style="{StaticResource SecondaryTextStyle}" />
+                        <Button Margin="0,4,0,0" Click="Reconnect_Click" Content="{h:T Key=Control_Reconnect}" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

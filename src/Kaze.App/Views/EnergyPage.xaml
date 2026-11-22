@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Kaze.App.Views.EnergyPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:h="using:Kaze.App.Helpers"
+    xmlns:local="using:Kaze.App.Views"
+    xmlns:tk="using:CommunityToolkit.WinUI.Controls">
+    <ScrollViewer>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="Narrow">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="PageRoot.Padding" Value="16,16,16,24" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Wide">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="641" /></VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <StackPanel x:Name="PageRoot" MaxWidth="{StaticResource PageMaxWidth}" Padding="{StaticResource PagePadding}" Spacing="12">
+            <Grid>
+                <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="{h:T Key=Energy_Energy}" />
+                <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal" Spacing="8">
+                    <ComboBox x:Name="FamilyBox" MinWidth="140" SelectionChanged="FamilyBox_SelectionChanged" Visibility="Collapsed" />
+                    <Button x:Name="RefreshButton" Click="Refresh_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon FontSize="16" Glyph="&#xE72C;" />
+                            <TextBlock Text="{h:T Key=Energy_Refresh}" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <InfoBar x:Name="TrackingInfo" IsClosable="True" Severity="Informational" Title="{h:T Key=Energy_EnergyTrackingIsOff}" />
+            <InfoBar x:Name="Info" IsClosable="True" />
+            <ProgressBar x:Name="LoadingBar" IsIndeterminate="True" Visibility="Collapsed" />
+
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel Spacing="12">
+                    <TextBlock x:Name="MonthTitle" Style="{StaticResource BodyStrongTextBlockStyle}" Text="{h:T Key=Energy_ThisMonth}" />
+                    <tk:WrapPanel HorizontalSpacing="48" VerticalSpacing="12">
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="{h:T Key=Energy_EnergyUsed}" />
+                            <TextBlock x:Name="TotalKWh" Style="{StaticResource TitleTextBlockStyle}" Text="--" />
+                        </StackPanel>
+                        <StackPanel Spacing="4">
+                            <TextBlock Style="{StaticResource SecondaryTextStyle}" Text="{h:T Key=Energy_EstimatedCost}" />
+                            <TextBlock x:Name="TotalCost" Style="{StaticResource TitleTextBlockStyle}" Text="--" />
+                        </StackPanel>
+                    </tk:WrapPanel>
+                    <ItemsControl x:Name="UnitsList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="local:EnergyUnitRow">
+                                <Grid Padding="0,4">
+                                    <TextBlock Text="{x:Bind Name}" />
+                                    <TextBlock HorizontalAlignment="Right" Text="{x:Bind Value}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock x:Name="SourceText" Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel Spacing="12">
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{h:T Key=Energy_Last6MonthsKWh}" />
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" HorizontalScrollMode="Auto" VerticalScrollBarVisibility="Disabled" VerticalScrollMode="Disabled">
+                    <ItemsControl x:Name="Bars" Height="220">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="16" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="local:EnergyBar">
+                                <Grid Width="72" Height="220" RowSpacing="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Rectangle
+                                        Width="40"
+                                        Height="{x:Bind Height}"
+                                        VerticalAlignment="Bottom"
+                                        Fill="{ThemeResource AccentFillColorDefaultBrush}"
+                                        Opacity="{x:Bind Opacity}"
+                                        RadiusX="4"
+                                        RadiusY="4" />
+                                    <TextBlock Grid.Row="1" HorizontalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind Value}" />
+                                    <TextBlock Grid.Row="2" HorizontalAlignment="Center" Style="{StaticResource SecondaryTextStyle}" Text="{x:Bind Label}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    </ScrollViewer>
+                    <TextBlock
+                        Style="{StaticResource SecondaryTextStyle}"
+                        Text="{h:T Key=Energy_FiguresComeFromAirCloudGo}" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

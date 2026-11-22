@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-dotnet@v6.1.0
+        with:
+          dotnet-version: 10.0.x
+      - name: Build and sign
+        shell: pwsh
+        env:
+          SIGNING_KEY: ${{ secrets.KAZE_SIGNING_KEY }}
+        run: |
+          if (-not $env:SIGNING_KEY) { throw "KAZE_SIGNING_KEY secret is missing" }
+          $key = Join-Path $env:RUNNER_TEMP "release-signing-key.pem"
+          try {
+            Set-Content -Path $key -Value $env:SIGNING_KEY -NoNewline
+            ./build/publish.ps1 -Version $env:GITHUB_REF_NAME.TrimStart('v') -SigningKey $key
+          }
+          finally {
+            Remove-Item $key -Force -ErrorAction SilentlyContinue
+          }
+      - name: Publish release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $v = $env:GITHUB_REF_NAME.TrimStart('v')
+          gh release create $env:GITHUB_REF_NAME `
+            "artifacts/Kaze-Setup-$v.exe" "artifacts/Kaze-Setup-$v.exe.sig" "artifacts/Kaze-$v-portable.exe" "artifacts/Kaze-$v-win-x64.zip" `
+            --title "Kaze $v" --generate-notes --verify-tag
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: winget-manifests
+          path: artifacts/winget/manifests

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Kaze.App.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:h="using:Kaze.App.Helpers"
+    xmlns:tk="using:CommunityToolkit.WinUI.Controls">
+    <ScrollViewer>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="Narrow">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="0" /></VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="PageRoot.Padding" Value="16,16,16,24" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Wide">
+                    <VisualState.StateTriggers><AdaptiveTrigger MinWindowWidth="641" /></VisualState.StateTriggers>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <StackPanel x:Name="PageRoot" MaxWidth="{StaticResource PageMaxWidth}" Padding="{StaticResource PagePadding}" Spacing="{StaticResource CardSpacing}">
+            <TextBlock Style="{StaticResource PageTitleStyle}" Text="{h:T Key=Settings_Settings}" />
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Margin="1,0,0,8" Text="{h:T Key=Settings_Account}" />
+            <tk:SettingsExpander x:Name="AccountsExpander" Header="{h:T Key=Settings_AirCloudGoAccounts}" IsExpanded="True">
+                <tk:SettingsExpander.HeaderIcon><FontIcon Glyph="&#xE716;" /></tk:SettingsExpander.HeaderIcon>
+                <tk:SettingsExpander.Description>
+                    <TextBlock x:Name="AccountText" />
+                </tk:SettingsExpander.Description>
+                <Button Click="AddAccount_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon FontSize="16" Glyph="&#xE8FA;" />
+                        <TextBlock Text="{h:T Key=Settings_AddAccount}" />
+                    </StackPanel>
+                </Button>
+            </tk:SettingsExpander>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{h:T Key=Settings_General}" />
+            <tk:SettingsCard Header="{h:T Key=Settings_Language}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xF2B7;" /></tk:SettingsCard.HeaderIcon>
+                <tk:SettingsCard.Description>
+                    <StackPanel Spacing="4">
+                        <TextBlock x:Name="LanguageNote" Text="{h:T Key=Settings_WindowsDisplayLanguageIsUsed}" TextWrapping="Wrap" />
+                        <HyperlinkButton x:Name="RestartButton" Margin="-12,0,0,0" Click="Restart_Click" Content="{h:T Key=Settings_RestartKazeToApply}" Visibility="Collapsed" />
+                    </StackPanel>
+                </tk:SettingsCard.Description>
+                <ComboBox x:Name="LanguageBox" MinWidth="160" SelectionChanged="Language_Changed" />
+            </tk:SettingsCard>
+            <tk:SettingsCard Description="{h:T Key=Settings_StartMinimizedInTheNotification}" Header="{h:T Key=Settings_StartWithWindows}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE7E8;" /></tk:SettingsCard.HeaderIcon>
+                <ToggleSwitch x:Name="StartWithWindows" Toggled="General_Changed" />
+            </tk:SettingsCard>
+            <tk:SettingsCard Description="{h:T Key=Settings_UsedByTheTrayIcon}" Header="{h:T Key=Settings_DefaultUnit}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE80F;" /></tk:SettingsCard.HeaderIcon>
+                <ComboBox x:Name="DefaultUnit" MinWidth="200" SelectionChanged="General_Changed" />
+            </tk:SettingsCard>
+            <tk:SettingsCard Description="{h:T Key=Settings_HowMuchTheWarmerAnd}" Header="{h:T Key=Settings_TemperatureStep}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE9CA;" /></tk:SettingsCard.HeaderIcon>
+                <ComboBox x:Name="TempStep" MinWidth="120" SelectionChanged="General_Changed">
+                    <x:String>0.5°</x:String>
+                    <x:String>1°</x:String>
+                </ComboBox>
+            </tk:SettingsCard>
+            <tk:SettingsCard Description="{h:T Key=Settings_DrawTheSetTemperatureOn}" Header="{h:T Key=Settings_TemperatureInTrayIcon}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE7F4;" /></tk:SettingsCard.HeaderIcon>
+                <ToggleSwitch x:Name="TempInIcon" Toggled="General_Changed" />
+            </tk:SettingsCard>
+            <tk:SettingsCard Header="{h:T Key=Settings_AppTheme}">
+                <tk:SettingsCard.HeaderIcon><FontIcon Glyph="&#xE790;" /></tk:SettingsCard.HeaderIcon>
+                <ComboBox x:Name="Theme" MinWidth="120" SelectionChanged="General_Changed" />
+            </tk:SettingsCard>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{h:T Key=Settings_KeyboardShortcuts}" />
+            <tk:SettingsExpander Description="{h:T Key=Settings_WorkWhileOtherAppsAre}" Header="{h:T Key=Settings_GlobalShortcuts}" IsExpanded="True">
+                <tk:SettingsExpander.HeaderIcon><FontIcon Glyph="&#xE765;" /></tk:SettingsExpander.HeaderIcon>
+                <Button Click="ResetHotkeys_Click" Content="{h:T Key=Settings_ResetToDefaults}" />
+                <tk:SettingsExpander.ItemsHeader>
+                    <StackPanel x:Name="HotkeyRows" Padding="58,8,16,8" Spacing="8" />
+                </tk:SettingsExpander.ItemsHeader>
+            </tk:SettingsExpander>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{h:T Key=Settings_CommandLine}" />
+            <tk:SettingsExpander Description="{h:T Key=Settings_ControlTheAirConditionerFrom}" Header="{h:T Key=Settings_CommandLineOptions}">
+                <tk:SettingsExpander.HeaderIcon><FontIcon Glyph="&#xE756;" /></tk:SettingsExpander.HeaderIcon>
+                <tk:SettingsExpander.ItemsHeader>
+                    <TextBlock
+                        Padding="58,12,16,12"
+                        FontFamily="Cascadia Mono, Consolas"
+                        FontSize="12"
+                        IsTextSelectionEnabled="True"
+                        LineHeight="20"
+                        TextWrapping="Wrap"
+                        Text="Kaze.exe --power on|off|toggle&#x0a;Kaze.exe --temp 25 | --temp +1 | --temp -0.5&#x0a;Kaze.exe --mode cool|heat|dry|fan|auto  --fan auto|1..6  --swing off|vertical&#x0a;Kaze.exe --preset &quot;Sleep&quot;  [--unit &quot;Bedroom&quot; | --all]&#x0a;Kaze.exe --account &quot;home@example.com&quot;  (switch account first)&#x0a;Kaze.exe --sleep  (start the sleep curve)&#x0a;Kaze.exe --show | --flyout | --minimized | --exit" />
+                </tk:SettingsExpander.ItemsHeader>
+            </tk:SettingsExpander>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{h:T Key=Settings_LocalAPI}" />
+            <tk:SettingsExpander x:Name="ApiExpander" Description="{h:T Key=Settings_LetsStreamDeckPowerToysScripts}" Header="{h:T Key=Settings_LocalHTTPAPI}">
+                <tk:SettingsExpander.HeaderIcon><FontIcon Glyph="&#xE968;" /></tk:SettingsExpander.HeaderIcon>
+                <ToggleSwitch x:Name="ApiEnabled" Toggled="Api_Changed" />
+                <tk:SettingsExpander.Items>
+                    <tk:SettingsCard Header="{h:T Key=Settings_Port}">
+                        <NumberBox x:Name="ApiPort" MinWidth="120" Maximum="65535" Minimum="1024" SpinButtonPlacementMode="Compact" ValueChanged="Api_Changed" />
+                    </tk:SettingsCard>
+                    <tk:SettingsCard Description="{h:T Key=Settings_OffMeansOnlyProgramsOn}" Header="{h:T Key=Settings_AllowDevicesOnMyNetwork}">
+                        <ToggleSwitch x:Name="ApiNetwork" Toggled="Api_Changed" />
+                    </tk:SettingsCard>
+                    <tk:SettingsCard Header="{h:T Key=Settings_Token}">
+                        <tk:SettingsCard.Description>
+                            <TextBlock x:Name="ApiToken" FontFamily="Cascadia Mono, Consolas" IsTextSelectionEnabled="True" TextWrapping="Wrap" />
+                        </tk:SettingsCard.Description>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Click="CopyToken_Click" Content="{h:T Key=Settings_Copy}" />
+                            <Button Click="NewToken_Click" Content="{h:T Key=Settings_NewToken}" />
+                        </StackPanel>
+                    </tk:SettingsCard>
+                    <tk:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
+                        <StackPanel Spacing="8">
+                            <TextBlock x:Name="ApiStatus" TextWrapping="Wrap" />
+                            <TextBlock
+                                x:Name="ApiExample"
+                                FontFamily="Cascadia Mono, Consolas"
+                                FontSize="12"
+                                IsTextSelectionEnabled="True"
+                                LineHeight="20"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </tk:SettingsCard>
+                </tk:SettingsExpander.Items>
+            </tk:SettingsExpander>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{h:T Key=Settings_Updates}" />
+            <tk:SettingsExpander x:Name="UpdatesExpander" Description="{h:T Key=Settings_KazeChecksTheGitHubRepository}" Header="{h:T Key=Settings_Updates}">
+                <tk:SettingsExpander.HeaderIcon><FontIcon Glyph="&#xE895;" /></tk:SettingsExpander.HeaderIcon>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button x:Name="InstallUpdateButton" Click="InstallUpdate_Click" Content="{h:T Key=Settings_Install}" Style="{StaticResource AccentButtonStyle}" Visibility="Collapsed" />
+                    <Button x:Name="CheckUpdatesButton" Click="CheckUpdates_Click" Content="{h:T Key=Settings_CheckNow}" />
+                </StackPanel>
+                <tk:SettingsExpander.Items>
+                    <tk:SettingsCard Description="{h:T Key=Settings_TheGitHubRepositoryAsOwner}" Header="{h:T Key=Settings_ReleaseSource}">
+                        <TextBox x:Name="UpdateRepo" MinWidth="220" LostFocus="UpdateRepo_LostFocus" PlaceholderText="{h:T Key=Settings_OwnerKaze}" />
+                    </tk:SettingsCard>
+                    <tk:SettingsCard Header="{h:T Key=Settings_CheckForUpdatesAutomatically}">
+                        <ToggleSwitch x:Name="UpdateAuto" Toggled="UpdateAuto_Toggled" />
+                    </tk:SettingsCard>
+                </tk:SettingsExpander.Items>
+            </tk:SettingsExpander>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="{h:T Key=Settings_About}" />
+            <tk:SettingsExpander Header="Kaze">
+                <tk:SettingsExpander.HeaderIcon>
+                    <ImageIcon Source="ms-appx:///Assets/AppIcon.png" />
+                </tk:SettingsExpander.HeaderIcon>
+                <tk:SettingsExpander.Description>
+                    <TextBlock x:Name="VersionText" />
+                </tk:SettingsExpander.Description>
+                <tk:SettingsExpander.Items>
+                    <tk:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
+                        <TextBlock
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            TextWrapping="Wrap"
+                            Text="{h:T Key=Settings_KazeIsAnUnofficialCommunity}" />
+                    </tk:SettingsCard>
+                    <tk:SettingsCard Click="OpenLogs_Click" Header="{h:T Key=Settings_OpenLogsFolder}" IsClickEnabled="True">
+                        <tk:SettingsCard.ActionIcon><FontIcon Glyph="&#xE8A7;" /></tk:SettingsCard.ActionIcon>
+                    </tk:SettingsCard>
+                    <tk:SettingsCard Click="OpenData_Click" Header="{h:T Key=Settings_OpenDataFolder}" IsClickEnabled="True">
+                        <tk:SettingsCard.ActionIcon><FontIcon Glyph="&#xE8A7;" /></tk:SettingsCard.ActionIcon>
+                    </tk:SettingsCard>
+                </tk:SettingsExpander.Items>
+            </tk:SettingsExpander>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

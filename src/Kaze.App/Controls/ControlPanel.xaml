@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="Kaze.App.Controls.ControlPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:c="using:Kaze.App.Controls"
+    xmlns:h="using:Kaze.App.Helpers"
+    xmlns:vm="using:Kaze.App.ViewModels">
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="OptionTemplate" x:DataType="vm:OptionItem">
+            <ToggleButton
+                MinHeight="40"
+                Padding="4,8"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                AutomationProperties.Name="{x:Bind Label}"
+                Command="{x:Bind SelectCommand}"
+                CommandParameter="{x:Bind Key}"
+                IsChecked="{x:Bind IsSelected, Mode=OneWay}"
+                IsEnabled="{x:Bind IsEnabled, Mode=OneWay}">
+                <StackPanel Spacing="4">
+                    <h:FluentIconPresenter IconSize="20" Kind="{x:Bind IconKind}" Visibility="{x:Bind IconVisibility}" />
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        MaxLines="1"
+                        Text="{x:Bind Label}"
+                        TextTrimming="CharacterEllipsis"
+                        TextWrapping="NoWrap" />
+                </StackPanel>
+            </ToggleButton>
+        </DataTemplate>
+
+        <UniformGridLayout x:Key="TileLayout" ItemsStretch="Fill" MinColumnSpacing="8" MinItemWidth="60" MinRowSpacing="8" />
+    </UserControl.Resources>
+
+    <StackPanel Spacing="16">
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel VerticalAlignment="Center" Spacing="4">
+                <ComboBox
+                    MinWidth="160"
+                    AutomationProperties.Name="{h:T Key=ControlPanel_AirConditioner}"
+                    ItemsSource="{x:Bind ViewModel.UnitChoices}"
+                    SelectedItem="{x:Bind ViewModel.SelectedUnit, Mode=TwoWay}"
+                    Visibility="{x:Bind ViewModel.HasMultipleUnits, Mode=OneWay}" />
+                <TextBlock
+                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                    FontSize="20"
+                    Text="{x:Bind ViewModel.UnitName, Mode=OneWay}"
+                    TextTrimming="CharacterEllipsis"
+                    Visibility="{x:Bind ViewModel.HasMultipleUnits, Mode=OneWay, Converter={StaticResource InverseBoolToVisibility}}" />
+                <TextBlock
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Text="{x:Bind ViewModel.StatusText, Mode=OneWay}" />
+            </StackPanel>
+            <ToggleButton
+                x:Name="PowerButton"
+                Grid.Column="1"
+                Width="48"
+                Height="48"
+                Padding="0"
+                AutomationProperties.Name="{h:T Key=ControlPanel_Power}"
+                Command="{x:Bind ViewModel.TogglePowerCommand}"
+                CornerRadius="24"
+                IsChecked="{x:Bind ViewModel.IsOn, Mode=OneWay}"
+                IsEnabled="{x:Bind ViewModel.CanControl, Mode=OneWay}"
+                ToolTipService.ToolTip="{h:T Key=ControlPanel_TurnOnOrOff}">
+                <h:FluentIconPresenter IconSize="20" Kind="Power" />
+            </ToggleButton>
+        </Grid>
+
+        <InfoBar
+            IsClosable="False"
+            IsOpen="{x:Bind ViewModel.HasError, Mode=OneWay}"
+            Message="{x:Bind ViewModel.ErrorText, Mode=OneWay}"
+            Severity="Error"
+            Title="{h:T Key=ControlPanel_Fault}" />
+
+        <Grid ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button
+                Width="40"
+                Height="40"
+                Padding="0"
+                VerticalAlignment="Center"
+                AutomationProperties.Name="{h:T Key=ControlPanel_LowerTemperature}"
+                Command="{x:Bind ViewModel.TemperatureDownCommand}"
+                IsEnabled="{x:Bind ViewModel.CanSetTemperature, Mode=OneWay}"
+                ToolTipService.ToolTip="{h:T Key=ControlPanel_LowerTemperature}">
+                <FontIcon FontSize="16" Glyph="&#xE738;" />
+            </Button>
+            <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock
+                    x:Name="TargetTextBlock"
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource TitleLargeTextBlockStyle}"
+                    Text="{x:Bind ViewModel.TargetText, Mode=OneWay}" />
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="8">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="{x:Bind ViewModel.RoomText, Mode=OneWay}" />
+                    <c:TemperatureChart
+                        x:Name="Trend"
+                        Width="72"
+                        Height="20"
+                        VerticalAlignment="Center"
+                        AutomationProperties.Name="{h:T Key=ControlPanel_RoomTemperatureLast24Hours}"
+                        Compact="True" />
+                </StackPanel>
+            </StackPanel>
+            <Button
+                Grid.Column="2"
+                Width="40"
+                Height="40"
+                Padding="0"
+                VerticalAlignment="Center"
+                AutomationProperties.Name="{h:T Key=ControlPanel_RaiseTemperature}"
+                Command="{x:Bind ViewModel.TemperatureUpCommand}"
+                IsEnabled="{x:Bind ViewModel.CanSetTemperature, Mode=OneWay}"
+                ToolTipService.ToolTip="{h:T Key=ControlPanel_RaiseTemperature}">
+                <FontIcon FontSize="16" Glyph="&#xE710;" />
+            </Button>
+        </Grid>
+
+        <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.HasUnit, Mode=OneWay}">
+            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{h:T Key=ControlPanel_Mode}" />
+            <ItemsRepeater ItemTemplate="{StaticResource OptionTemplate}" ItemsSource="{x:Bind ViewModel.Modes}" Layout="{StaticResource TileLayout}" />
+        </StackPanel>
+
+        <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.HasFans, Mode=OneWay}">
+            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{h:T Key=ControlPanel_FanSpeed}" />
+            <ItemsRepeater ItemTemplate="{StaticResource OptionTemplate}" ItemsSource="{x:Bind ViewModel.Fans}">
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout ItemsStretch="Fill" MinColumnSpacing="8" MinItemWidth="60" MinRowSpacing="8" />
+                </ItemsRepeater.Layout>
+            </ItemsRepeater>
+        </StackPanel>
+
+        <StackPanel Spacing="8" Visibility="{x:Bind ViewModel.HasSwings, Mode=OneWay}">
+            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{h:T Key=ControlPanel_Swing}" />
+            <ItemsRepeater ItemTemplate="{StaticResource OptionTemplate}" ItemsSource="{x:Bind ViewModel.Swings}">
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout ItemsStretch="Fill" MinColumnSpacing="8" MinItemWidth="72" MinRowSpacing="8" />
+                </ItemsRepeater.Layout>
+            </ItemsRepeater>
+        </StackPanel>
+
+        <Grid ColumnSpacing="8" RowSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <DropDownButton HorizontalAlignment="Stretch" IsEnabled="{x:Bind ViewModel.CanControl, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <h:FluentIconPresenter IconSize="16" Kind="Star" />
+                    <TextBlock Text="{h:T Key=ControlPanel_Presets}" />
+                </StackPanel>
+                <DropDownButton.Flyout>
+                    <MenuFlyout x:Name="PresetsFlyout" Opening="PresetsFlyout_Opening" Placement="Top" />
+                </DropDownButton.Flyout>
+            </DropDownButton>
+            <DropDownButton Grid.Column="1" HorizontalAlignment="Stretch" IsEnabled="{x:Bind ViewModel.HasUnit, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <h:FluentIconPresenter IconSize="16" Kind="Timer" />
+                    <TextBlock Text="{h:T Key=ControlPanel_OffTimer}" />
+                </StackPanel>
+                <DropDownButton.Flyout>
+                    <MenuFlyout Placement="Top">
+                        <MenuFlyoutItem Command="{x:Bind ViewModel.StartOffTimerCommand}" CommandParameter="30" Text="{h:T Key=ControlPanel_In30Minutes}" />
+                        <MenuFlyoutItem Command="{x:Bind ViewModel.StartOffTimerCommand}" CommandParameter="60" Text="{h:T Key=ControlPanel_In1Hour}" />
+                        <MenuFlyoutItem Command="{x:Bind ViewModel.StartOffTimerCommand}" CommandParameter="120" Text="{h:T Key=ControlPanel_In2Hours}" />
+                        <MenuFlyoutItem Command="{x:Bind ViewModel.StartOffTimerCommand}" CommandParameter="240" Text="{h:T Key=ControlPanel_In4Hours}" />
+                        <MenuFlyoutItem Command="{x:Bind ViewModel.StartOffTimerCommand}" CommandParameter="480" Text="{h:T Key=ControlPanel_In8Hours}" />
+                        <MenuFlyoutSeparator />
+                        <MenuFlyoutItem Command="{x:Bind ViewModel.CancelTimersCommand}" IsEnabled="{x:Bind ViewModel.HasTimers, Mode=OneWay}" Text="{h:T Key=ControlPanel_CancelAllTimers}" />
+                    </MenuFlyout>
+                </DropDownButton.Flyout>
+            </DropDownButton>
+
+            <ToggleButton
+                x:Name="SleepButton"
+                Grid.Row="1"
+                Grid.ColumnSpan="{x:Bind ViewModel.SleepColumnSpan, Mode=OneWay}"
+                HorizontalAlignment="Stretch"
+                Command="{x:Bind ViewModel.ToggleSleepCommand}"
+                IsChecked="{x:Bind ViewModel.SleepActive, Mode=OneWay}"
+                IsEnabled="{x:Bind ViewModel.CanSleep, Mode=OneWay}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.SleepDescription, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon FontSize="16" Glyph="&#xE708;" />
+                    <TextBlock Text="{x:Bind ViewModel.SleepText, Mode=OneWay}" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+            </ToggleButton>
+
+            <Button
+                x:Name="FrostWashButton"
+                Grid.Row="1"
+                Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                IsEnabled="{x:Bind ViewModel.CanStartFrostWash, Mode=OneWay}"
+                ToolTipService.ToolTip="{h:T Key=ControlPanel_CleanTheIndoorCoilBy}"
+                Visibility="{x:Bind ViewModel.FrostWashSupported, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <h:FluentIconPresenter IconSize="16" Kind="Broom" />
+                    <TextBlock TextTrimming="CharacterEllipsis" Text="{h:T Key=ControlPanel_FrostWash}" Visibility="{x:Bind ViewModel.FrostWashActive, Mode=OneWay, Converter={StaticResource InverseBoolToVisibility}}" />
+                    <TextBlock TextTrimming="CharacterEllipsis" Text="{h:T Key=ControlPanel_FrostWashRunning}" Visibility="{x:Bind ViewModel.FrostWashActive, Mode=OneWay}" />
+                    <ProgressRing Width="16" Height="16" IsActive="{x:Bind ViewModel.FrostWashActive, Mode=OneWay}" Visibility="{x:Bind ViewModel.FrostWashActive, Mode=OneWay}" />
+                </StackPanel>
+                <Button.Flyout>
+                    <Flyout x:Name="FrostWashFlyout" Placement="Top">
+                        <StackPanel MaxWidth="280" Spacing="12">
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{h:T Key=ControlPanel_StartFrostWash}" />
+                            <TextBlock TextWrapping="Wrap" Text="{h:T Key=ControlPanel_TheUnitFreezesItsIndoor}" />
+                            <Button HorizontalAlignment="Right" Click="StartFrostWash_Click" Content="{h:T Key=ControlPanel_Start}" Style="{StaticResource AccentButtonStyle}" />
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
+
+        <TextBlock
+            HorizontalAlignment="Center"
+            Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+            Style="{StaticResource CaptionTextBlockStyle}"
+            Text="{x:Bind ViewModel.TimerText, Mode=OneWay}"
+            Visibility="{x:Bind ViewModel.HasTimers, Mode=OneWay}" />
+    </StackPanel>
+</UserControl>
